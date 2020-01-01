@@ -1,5 +1,4 @@
 #include "SegaSCPI.h"
-
 /****************************************************************************
 	Funciones de PilaCodigoErrires
 *****************************************************************************/
@@ -62,14 +61,14 @@ int PilaErrorores::error(int codigo)
 	Funcion publica: 	Inicializa la pila scpi
 ***************************************************************************/
 //SegaSCPI::SegaSCPI(){}
-void SegaSCPI::begin(tipoNivel *pRaiz ,String *codigosErr,String *nombre)//Inicializa la pila
+void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre)//Inicializa la pila
 {
- 
-  nombreSistema=*nombre;
+   nombreSistema=*nombre;
   //Raiz apunta a una estructura tipoNivel cuyo puntero sub apunta al array de
   // estructuras tipoNivel NivelDos
   Raiz=pRaiz; 
-  codigosError=codigosErr;
+  //codigosError=codigosErr;
+  //String *codigosErr,
   this->pilaErrores.begin(8);
 }
 /*****************************************************************************
@@ -84,7 +83,7 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *codigosErr,String *nombre)//Inici
 {
   PuertoActual=PuertoSerie;
   if (Raiz==NULL)return;//Si no hay men� de comandos salimos
-  if (codigosError==NULL)return; //Si no hay array de errores salimos
+  //if (codigosError==NULL)return; //Si no hay array de errores salimos
   locCom=0; // Pone a 0 el �ndice de la cadena por la que recibe del puerto serie
 	indComRd = 0; // Pone a cero el indice de la cadena de comando que va a leer
 	//locCom=Serial.readBytesUntil('\r',buffCom, BUFFCOM_SIZE);
@@ -110,11 +109,11 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *codigosErr,String *nombre)//Inici
 	}//while(locCom)
 }//scpi(void)
 /*******************************************************************************************
-  Funci�n privada: 
+  Función privada: 
   Lee comandos. Se pasa como parametro de entrada una cadena con un comando.
   Si encuentra un comando valido de un submenu, apunta a ese menu y si es
-  un comando con puntero a func�on, la ejecuta. Si no encuentra ni una cosa 
-  ni otra, apunta al men� raiz. Y si en este tampoco esta el comando, sale 
+  un comando con puntero a función, la ejecuta. Si no encuentra ni una cosa 
+  ni otra, apunta al menú raiz. Y si en este tampoco esta el comando, sale 
   con error
 ********************************************************************************************/
  void SegaSCPI::LeeComandos(char *cadena)
@@ -340,3 +339,19 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *codigosErr,String *nombre)//Inici
   else  {errorscpi(6); return 0;}// si no est� en rango da el error de "par�metro fuera de rango"
 } 
 /***************************** FIN ***********************************/
+#define DEBUG  
+
+/*
+={
+        "0 no hay errores",
+        "1 Caracter no valido",
+        "2 Comando desconocido",
+        "3 Cadena demasiado larga",
+        "4 Parametro inexistente",
+        "5 Formato de parametro no valido",
+        "6 Parametro fuera de rango",
+        "7 El dato no esta listo",
+      //ERROR_USUARIO1,
+      //ERROR_USUARIO2,
+      };
+*/

@@ -28,7 +28,7 @@ tipoNivel NivelDos[] = //Array de estructuras tipo Nivel
 //SCPI_NIVEL_RAIZ// Macro que hace la declaración obligatoria del nivel Raiz
 //tipoNivel miRaiz[]=SCPI_RAIZ
 tipoNivel miRaiz[]={sizeof(NivelDos)/sizeof(*NivelDos),"","",NULL,NivelDos};
-
+/*
 String misErrores[]=
 {
   // Errores del sistema SCPI 0...6
@@ -42,12 +42,13 @@ String misErrores[]=
   // Errores personalizados por el usuario 
   "7 El dato no esta listo",		// ERROR N. 7
 };
+*/
 SegaSCPI MiScpi;//Objeto SCPI
 unsigned int milisegundos=3000;
 void setup() 
 {
   String nombreSistema="Mi sistema";
-  MiScpi.begin(miRaiz, misErrores, &nombreSistema);
+  MiScpi.begin(miRaiz, &nombreSistema);
   Serial.begin(115200);
   Serial1.begin(115200);
   Serial.flush();
@@ -117,3 +118,4 @@ void opcSCPI(void)
  *********************************************************************/
 void clsSCPI(void){MiScpi.errorscpi(-1);}
 /*********************************************************************/
+ 

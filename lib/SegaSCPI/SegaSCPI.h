@@ -67,8 +67,7 @@ public:
       PilaErrorores pilaErrores;
       String nombreSistema;
     //Métodos públicos
-      //SegaSCPI();//Constructor
-      void begin(tipoNivel *,String *,String *);//Inicializa la pila
+      void begin(tipoNivel *,String *);//Inicializa la pila
       void scpi(/*USARTClass**/ HardwareSerial* );//Función principal
       void errorscpi(int); //Gestión de errores
       int actualizaInt(int *,int,int);//Actualiza variable entero
@@ -78,7 +77,7 @@ public:
 private://Variables privadas  
       int PuertoSCPI;
       tipoNivel *Raiz;
-      String *codigosError;//Array de cadenas con la descripción de los errores
+      //String *codigosError;//Array de cadenas con la descripción de los errores
       char buffCom[BUFFCOM_SIZE]; // Buffer leido del puerto serie con el comando
       int locCom; // Cantidad de caracteres en el buffer
       unsigned char indComRd;// = 0;
@@ -88,6 +87,7 @@ private://Variables privadas
       unsigned char valido(char);
       char CaracterBueno(char);
       void LeeComandos(char *cadena);
+      String codigosError[16];
 };
 /***********************************************************************
 			        MACROS
@@ -103,14 +103,4 @@ private://Variables privadas
 ************************************************************************/
 #define ESCRIBE_PUERTO_SERIE(X) PuertoActual->println(X); 
 /****************************************************************************/
-
-#define DEBUG   Serial1.println(arrayErrores[0]);\
-Serial1.println(arrayErrores[1]);\
-Serial1.println(arrayErrores[2]);\
-Serial1.println(arrayErrores[3]);
-
-  
-  
-
-
 #endif 
