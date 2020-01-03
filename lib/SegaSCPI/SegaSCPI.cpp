@@ -74,6 +74,7 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
   this->codigosError[4]="4 Parametro inexistente";
   this->codigosError[5]="5 Formato de parametro no valido";
   this->codigosError[6]="6 Parametro fuera de rango";
+  #define STRINGS_ERRORES 7 //String de definición de erroes
   erroresDelSistema = errSistema; //Erroes del usuario
  }
 /*****************************************************************************
@@ -172,16 +173,17 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
 	codigoDevuelto = pilaErrores.error(codigo);
 	if (codigoDevuelto != -1) 
    {
-      if(codigoDevuelto<=6)
+      if(codigoDevuelto<=STRINGS_ERRORES-1)
       {
+        if (codigosError[codigoDevuelto].length()<=64)
         PuertoActual->println(codigosError[codigoDevuelto]);
+        else PuertoActual->println("error indeterminado");
       }
       else 
       {
-        // TO DO ver como saber el tamaño de "erroresDelSistema"
-        // pa no imprimir algo desconocido
-        PuertoActual->println(erroresDelSistema[codigoDevuelto-7]);
-
+        if (erroresDelSistema[codigoDevuelto-7].length()<=64)
+        PuertoActual->println(erroresDelSistema[codigoDevuelto-STRINGS_ERRORES]);
+        else PuertoActual->println("error indeterminado");
       }
    }
 }
