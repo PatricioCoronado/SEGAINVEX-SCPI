@@ -16,10 +16,10 @@
 *************************************************************************/
 struct tipoNivel
 {             
-  int   NumNivInf;       // Número de niveles por debajo de este
-  const char *largo, *corto;   // Nombre largo y nombre corto del comando
-  /*tpf pf*/void (*pf)();// Puntero a función a ejecutar
-  tipoNivel *sub;     // Puntero a la estructura de niveles inferiores
+  int   NumNivInf;// Número de niveles por debajo de este
+  const char *largo, *corto;// Nombre largo y nombre corto del comando
+  void (*pf)();// Puntero a función a ejecutar
+  tipoNivel *sub;// Puntero a la estructura de niveles inferiores
 };
 
 /****************************************************************************

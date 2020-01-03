@@ -30,13 +30,13 @@ tipoNivel Raiz[]= SCPI_RAIZ //
 */
 String misErrores[]=
 {//Los errores de 0 a 6 son de scpi
-"7 mi error",
-"8 mi error",
-"9 mi error",
-"10 mi error",
-"11 mi error",
-"12 mi error",
-"13 mi error",
+"7 mi error con mas texto freno",
+"8 mi error malo decicaccc",
+"9 mi error no tan biç",
+"10 mi error ñ rrty",
+"11 mi errorr ",
+"12 mi er",
+"13 mi ",
 };
 SegaSCPI segaScpi;//Objeto SCPI
 unsigned int milisegundos=3000;
