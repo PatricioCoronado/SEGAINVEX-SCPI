@@ -175,7 +175,7 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
    {
       if(codigoDevuelto<=6)
       {
-        if (codigosError[codigoDevuelto].length()<=64)
+        if (codigosError[codigoDevuelto].length()<=STRINGS_ERRORES-1)
         PuertoActual->println(codigosError[codigoDevuelto]);
         else PuertoActual->println("error indeterminado");
       }
