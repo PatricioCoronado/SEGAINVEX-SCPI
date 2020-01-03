@@ -11,11 +11,6 @@
 *************************************************************************/
 #define BUFFCOM_SIZE 32 //Longitud del buffer de lectura del comando recibido
 #define LONG_SCPI 32 // Longitud máxima del comando sin contar parámetros
-#define PSERIAL  0 //Puerto serie a utilizar
-#define PSERIAL1 1
-#define PSERIAL2 2
-#define PSERIAL3 3
-#define PSERIALUSB 4
 /*************************************************************************
                 TIPOS
 *************************************************************************/
@@ -67,7 +62,7 @@ public:
       PilaErrorores pilaErrores;
       String nombreSistema;
     //Métodos públicos
-      void begin(tipoNivel *,String *);//Inicializa la pila
+      void begin(tipoNivel *,String *,String *);//Inicializa la pila
       void scpi(/*USARTClass**/ HardwareSerial* );//Función principal
       void errorscpi(int); //Gestión de errores
       int actualizaInt(int *,int,int);//Actualiza variable entero
@@ -75,6 +70,8 @@ public:
       int actualizaBool(bool *);//Actualiza Booleano
       int actualizaDec(double *,double,double);//Actualiza decimal
 private://Variables privadas  
+
+      String *erroresDelSistema;
       int PuertoSCPI;
       tipoNivel *Raiz;
       //String *codigosError;//Array de cadenas con la descripción de los errores
@@ -88,6 +85,7 @@ private://Variables privadas
       char CaracterBueno(char);
       void LeeComandos(char *cadena);
       String codigosError[16];
+      //String* codigosError;//Para generarlo dinámcicamente
 };
 /***********************************************************************
 			        MACROS
@@ -98,9 +96,10 @@ private://Variables privadas
 #define SCPI_COMANDO(X,Y,Z) 0, #X,#Y,Z,NULL, //Para definir comandos 
 //Para definir el nivel raiz de comandos
 #define SCPI_RAIZ {sizeof(NivelDos)/sizeof(*NivelDos),"","",NULL,NivelDos}; 
+#define MENU_SCPI tipoNivel NivelDos[]= 
 /************************************************************************
  Macros para leer y escribir el pueto serie actual
 ************************************************************************/
-#define ESCRIBE_PUERTO_SERIE(X) PuertoActual->println(X); 
+
 /****************************************************************************/
 #endif 
