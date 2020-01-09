@@ -25,19 +25,14 @@ MENU_SCPI  //Array de estructuras tipo Nivel
 	SCPI_COMANDO(*CLS,*CLS,clsSCPI)// Borra la pila de errores
 };
 tipoNivel Raiz[]= SCPI_RAIZ //
-/*
-  DEFINICION DE ERRORES DE USUARIO
-*/
+//Opcionalmente podemos definir la lista de errores (a partir de 7):
 String misErrores[]=
 {//Los errores de 0 a 6 son de scpi
-"7 mi error",
-"8 mi error",
-"9 mi error",
-"10 mi error",
-"11 mi error",
-"12 mi error",
-"13 mi error",
+	"7 mi error",
+	"8 mi error",
+	"9 mi error",
 };
+
 SegaSCPI segaScpi;//Objeto SCPI
 unsigned int milisegundos=3000;
 void setup() 
@@ -91,45 +86,36 @@ void miFuncion0(void)
   //Serial.println("Se ha ejecutado la funcion 0");
   segaScpi.PuertoActual->println("Se ha ejecutado la funcion 0");
 }
-/**********************************************************************
+/************************************************************************
     Comando: FUNCION1 o FS1
     
- *********************************************************************/
+ ***********************************************************************/
 void miFuncion1(void)
 {
   segaScpi.PuertoActual->println("Se ha ejecutado la funcion 1");
 }
-/*********************************************************************/
- /**************************************************************************
-    Función privada del Comando: ERROR ó ERR
+/************************************************************************/
+ /************************************************************************
+    Funciones scpi comunes a todos los sistemas
+ *************************************************************************/
+ /************************************************************************
+    Función del Comando: ERROR ó ERR
     Envia por el puerto el último error registrado por SEGAINVEX-SCPI
- **************************************************************************/
-void errorSCPI(void)
-{
-  if (segaScpi.FinComando[0] == '?')segaScpi.errorscpi(0);
-	else segaScpi.errorscpi(4);
-}
-/**************************************************************************
-  Función privada del Comando: *IDN"
+ *************************************************************************/
+void errorSCPI(void){segaScpi.errorscpi(0);}
+/*************************************************************************
+  Función del Comando: *IDN"
    Envia por el puerto una cadena que identifica al sistema
- **************************************************************************/
-void idnSCPI(void)
-{
-	//ESCRIBE_PUERTO_SERIE(IdentificacionDelSistema)
-  segaScpi.PuertoActual->println(segaScpi.nombreSistema);
-}	
- /**************************************************************************
-  Función privada del Comando:*OPC
+ *************************************************************************/
+void idnSCPI(void){segaScpi.PuertoActual->println(segaScpi.nombreSistema);}	
+ /************************************************************************
+  Función del Comando:*OPC
   Envia por el puerto un uno
- **************************************************************************/
-void opcSCPI(void)
-{
-	segaScpi.PuertoActual->println("1");
-  //ESCRIBE_PUERTO_SERIE("1")
-}
-/**************************************************************************
+ *************************************************************************/
+void opcSCPI(void){	segaScpi.PuertoActual->println("1");}
+/*************************************************************************
     Comando: CLS
     Limpia la pila de errores de SEGAINVEX-SCPI
- **************************************************************************/
+ *************************************************************************/
 void clsSCPI(void){segaScpi.errorscpi(-1);}
-/**************************************************************************/
+/*************************************************************************/

@@ -1,0 +1,1 @@
+git push --mirror https://github.com/PatricioCoronado/SEGAINVEX-SCPI

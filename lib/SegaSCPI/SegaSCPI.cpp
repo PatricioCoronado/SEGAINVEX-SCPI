@@ -1,10 +1,35 @@
+/*************************************************************************
+	DEPARTAMENTO DE ELECTRÓNICA DE SEGAINVEX. UNIVERSIDAD AUTONOMA DE MADRID				
+	LIBRERIA PARA ARDUINO SegaSCPI V1
+  SISTEMA PARA COMUNICAR UNA COMPUTADORA CON ARDUINO MEDIANTE PUERTO SERIE 
+  Fichero de código SegaSCPI.cpp
+**************************************************************************/
+/*
+	Copyright © 2017 Mariano Cuenca, Patricio Coronado
+	
+	This file is part of SegaSCPI
+
+    SegaSCPI is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    SegaSCPI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with SegaSCPI.  If not, see <http://www.gnu.org/licenses/>.
+
+**************************************************************************/
 #include "SegaSCPI.h"
-/****************************************************************************
-	Funciones de PilaCodigoErrires
-*****************************************************************************/
-/****************************************************************************
+/************************************************************************
+	Funciones de la clase PilaCodigoErrores
+*************************************************************************/
+/************************************************************************
  * Inicializador
-*****************************************************************************/
+*************************************************************************/
 void PilaErrorores::begin(uint8_t maxIn)//Constructor
 {
 		//Crea la pila "arrayErrores" y la apunta con *arrayErrores
@@ -24,9 +49,9 @@ void PilaErrorores::begin(uint8_t maxIn)//Constructor
 		this->indice = 0;
     
 }
-/*************************************************************************
+/************************************************************************
    * Error
- **************************************************************************/
+ ************************************************************************/
 int PilaErrorores::error(int codigo)
 {
 	int retorno;//Valor a devolver -1 o el último cádigo de error
@@ -54,19 +79,59 @@ int PilaErrorores::error(int codigo)
 	}//Switch
 		return retorno;// si 0, no hay errores
 }
-/****************************************************************************
-	Fin de funciones de PilaCodigoErrires
-*****************************************************************************/
-/*****************************************************************************
+/************************************************************************
+	Funciones de la clase SegaSCPI
+*************************************************************************/
+/************************************************************************
 	Funcion publica: 	Inicializa la pila scpi
-***************************************************************************/
-//SegaSCPI::SegaSCPI(){}
-void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inicializa la pila
+*************************************************************************/
+void SegaSCPI::begin(tipoNivel *pRaiz)//Inicializa la pila
+{
+//  codigosError = new String[12]; //Para generarlo dinámicamente
+  nombreSistema="nombre del sistema";
+  Raiz=pRaiz; //Puntero para recibir el menú raiz que se pasa como parámetro
+  this->pilaErrores.begin(8);
+  this->rellenaCodigosError();
+  #define STRINGS_ERRORES 7 //String de definición de erroes
+  erroresDelSistema = NULL; //Erroes del usuario
+ }
+/************************************************************************
+	Funcion publica: 	Inicializa scpi  
+  Parámetros de entrada:
+    puntero al nivel raiz de menús
+    puntero al string que identifica el sistema
+*************************************************************************/
+void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre)//Inicializa la pila
 {
 //  codigosError = new String[12]; //Para generarlo dinámicamente
   nombreSistema=*nombre;
   Raiz=pRaiz; 
   this->pilaErrores.begin(8);
+  this->rellenaCodigosError();
+  #define STRINGS_ERRORES 7 //String de definición de erroes
+  erroresDelSistema = NULL; //Erroes del usuario
+ }
+ /************************************************************************
+	Funcion publica: 	Inicializa scpi 
+  Parámetros de entrada:
+    puntero al nivel raiz de menús
+    puntero al string que identifica el sistema
+    puntero a un array de strings donde hay cadenas idenfificadoras de errores
+*************************************************************************/
+void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inicializa la pila
+{
+//  codigosError = new String[12]; //Para generarlo dinámicamente
+  nombreSistema=*nombre;
+  Raiz=pRaiz; 
+  this->rellenaCodigosError();
+  #define STRINGS_ERRORES 7 //String de definición de erroes
+  erroresDelSistema = errSistema; //Erroes del usuario
+ }
+ /************************************************************
+  * Rellena los strings de códigos de error del  SCPI
+ *************************************************************/
+void SegaSCPI::rellenaCodigosError(void)  
+{
   this->codigosError[0]="0 no hay errores";
   this->codigosError[1]="1 Caracter no valido";
   this->codigosError[2]="2 Comando desconocido";
@@ -74,17 +139,17 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
   this->codigosError[4]="4 Parametro inexistente";
   this->codigosError[5]="5 Formato de parametro no valido";
   this->codigosError[6]="6 Parametro fuera de rango";
-  #define STRINGS_ERRORES 7 //String de definición de erroes
-  erroresDelSistema = errSistema; //Erroes del usuario
- }
-/*****************************************************************************
+}
+/***************************************************************************
 	Función pública: 	
-    Función de entrada a SegaSCPI. Se la llama con el  PuertoSCPI a utilizar como parámetro. 
-    Lee el buffer del serial en buffCom y lo analiza con "LeeComando" en varias pasadas.
-    Cuando se recibe un comando de un submenu SUBMENU:COMANDO [lista de parametros], en una
-	primera pasada del bucle while se procesa SUBMENU: y en otra :COMANDO dejando "FinComando" 
-	apuntando a la lista de parámetros contenidas en buffCom
-*******************************************************************************/
+  Función de entrada a SegaSCPI. Se la llama con la dirección al serial a 
+  utilizar como  parámetro. 
+  Lee el buffer del serial en buffCom y lo analiza con "LeeComando" en tantas
+  pasadas como necesite.  Cuando se recibe un comando de un submenu 
+  SUBMENU:COMANDO [lista de parametros], en una	primera pasada del bucle 
+  while se procesa SUBMENU: y en otra :COMANDO dejando "FinComando" 
+	apuntando a la lista de parámetros contenidas en buffCom.
+****************************************************************************/
  void SegaSCPI::scpi(HardwareSerial /*USARTClass*/* PuertoSerie) 
 {
   PuertoActual=PuertoSerie;
@@ -175,13 +240,13 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
    {
       if(codigoDevuelto<=STRINGS_ERRORES-1)
       {
-        if (codigosError[codigoDevuelto].length()<=64)
+        if (codigosError[codigoDevuelto].length()<=MAX_LONG_STRING_ERR)
         PuertoActual->println(codigosError[codigoDevuelto]);
         else PuertoActual->println("error indeterminado");
       }
       else 
       {
-        if (erroresDelSistema[codigoDevuelto-7].length()<=64)
+        if (erroresDelSistema[codigoDevuelto-STRINGS_ERRORES].length()<=MAX_LONG_STRING_ERR)
         PuertoActual->println(erroresDelSistema[codigoDevuelto-STRINGS_ERRORES]);
         else PuertoActual->println("error indeterminado");
       }
@@ -213,9 +278,9 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
           return (0);// no es un caracter bueno.
   return (toupper(caracter));   //Si es un caracter bueno lo pasa a mayuscula y lo devuelve
 }
-/***************************************************************************
+/*************************************************************************
     Función privada: Lee caracteres del buffer buffCom[]
-**************************************************************************/
+*************************************************************************/
  char SegaSCPI::lee_caracter()  {
   unsigned char carRecv;
   if (locCom == 0) return (0x00); //Si no hay caracteres en buffer salimos con caracter nulo 0
@@ -225,26 +290,28 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
   if (indComRd == BUFFCOM_SIZE) indComRd = 0; // Si se sale del buffCom lo ponemos al pricipio
   return (carRecv);             // Salimos devolviendo el caracter leido
 }
-/**************************************************************************
-	FUNCIONES AUXILIARES PARA CAMBIAR VALORES ENTEROS, DOBLES Y BOOLEANOS EN EL SISTEMA
+/*************************************************************************
+  FUNCIONES AUXILIARES PARA CAMBIAR VALORES ENTEROS, 
+  DOBLES Y BOOLEANOS EN EL SISTEMA
   
- Estas funciones hay que ejecutarlas dentro de las funciones que responden a comandos 
- scpi y sabemos que hay UN parámetro en el buffer "FinComando". Reciben como parámetro
- principal la dirección de la variable que se quiere actualizar.
+ Estas funciones se pueden llamar desde el programa de usuario, desde las
+ funciones que responden a comandos SCPI cuando sabemos  que tras el comando
+ hay UN parámetro. en el buffer "FinComando".
 
  Leen un parámetro del array tipo char "FinComando[]".
  
- Si el carácter FinComando[0] es '?' devuelve el valor actual del parámetro. Si es un espacio,
- lee el parámetro que tiene que estar a continuación, si no está da un error. Si no es ninguno
- de los anteriores da un error 6. 
+ Si el carácter FinComando[0] es '?' devuelve el valor actual del parámetro.
+ Si es un espacio, lee el parámetro que tiene que estar a continuación, 
+ si no está da un error. Si no es ninguno de los anteriores da un error 6. 
  **************************************************************************/
 /**************************************************************************
    Función pública.
-   Cambia la variable del sistema tipo double cuya dirección se pasa como argumento. Además 
-   hay que    pasarle el valor máximo, el mínimo. Devuelve 1 si cambió la variable. 0, si
-   no cambió la variable por errores y 2 si devolvió el valor de la variable.
+   Cambia la variable del sistema tipo double cuya dirección se pasa como
+   argumento. Además hay que pasarle el valor máximo y el mínimo.Devuelve
+   1 si cambió la variable. 0, si no cambió la variable por errores y 2 
+   si devolvió el valor de la variable.
  **************************************************************************/
- int SegaSCPI::actualizaDec(double *pVariableDelSistema,double Maximo, double Minimo)
+ int SegaSCPI::actualizaVarDecimal(double *pVariableDelSistema,double Maximo, double Minimo)
 {
   double Var; //variable intermedia
   // Si solo pregunta por el dato, se responde y sale
@@ -257,6 +324,7 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
   if(FinComando[0]==' ')// Si el primer carácter de FinComado es 'espacio' lee el parámetro
   {   
     Var=strtod(FinComando,NULL);//Lee un double de la cadena FinComando
+    //if(Var=*pVariableDelSistema) return 1;//Si el valor nuevo es igual al actual sale.
   }   
   else {errorscpi(4);return 0;} // Si FinComando no empieza por 'espacio' Error!Parómetros inexistentes.
 // Si el número de parámetros leidos es correcto comprueba los rangos
@@ -265,12 +333,12 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
 }
 /**************************************************************************
    Función pública.
-   Cambia la variable del sistema tipo int cuya dirección se pasa como argumento.
-    Además hay que pasarle el valor máximo y el mínimo.
-   Devuelve 1 si cambió la variable. 0, si no cambió la variable por errores.
-   Y 2 si devolviá el valor de la variable.
+   Cambia la variable del sistema tipo int cuya dirección se pasa como 
+   argumento. Además hay que pasarle el valor máximo y el mínimo.
+   Devuelve 1 si cambió la variable. 0, si no cambió la variable por
+    errores. Y 2 si devolviá el valor de la variable.
  **************************************************************************/
- int SegaSCPI::actualizaInt(int *pVariableDelSistema,int Maximo, int Minimo)
+ int SegaSCPI::actualizaVarEntera(int *pVariableDelSistema,int Maximo, int Minimo)
 {
   unsigned int np; // námero de parámetros leido por sscanf
   int Var; //variable intermedia
@@ -303,7 +371,7 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
  Devuelve 1 si cambió la variable. 0, si no cambió la variable por errores.
  Y 2 si devolvió el valor de la variable.
  **************************************************************************/
- int SegaSCPI::actualizaDiscr(int *pVariableDelSistema,int ValoresPosibles[],int NumeroValores)// 
+ int SegaSCPI::actualizaVarDiscreta(int *pVariableDelSistema,int ValoresPosibles[],int NumeroValores)// 
 {
   unsigned int np; // número de parámetros leido por sscanf
   int i, Var; //variable intermedia
@@ -335,7 +403,7 @@ void SegaSCPI::begin(tipoNivel *pRaiz ,String *nombre,String* errSistema)//Inici
    Cambia la variable del sistema tipo booleana cuya dirección se pasa 
    como argumento
  **************************************************************************/
- int SegaSCPI::actualizaBool(bool *pVariableDelSistema)
+ int SegaSCPI::actualizaVarBool(bool *pVariableDelSistema)
 {
   unsigned int np; // número de parámetros leido por sscanf
   int Var; //variable intermedia
