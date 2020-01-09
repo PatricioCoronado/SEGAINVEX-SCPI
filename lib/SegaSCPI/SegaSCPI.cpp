@@ -1,3 +1,24 @@
+/*************************************************************************
+	DEPARTAMENTO DE ELECTRÓNICA DE SEGAINVEX. UNIVERSIDAD AUTONOMA DE MADRID				
+	LIBRERIA PARA ARDUINO SegaSCPI V1
+  SISTEMA PARA COMUNICAR UNA COMPUTADORA CON ARDUINO MEDIANTE PUERTO SERIE 
+  Fichero de código SegaSCPI.cpp
+**************************************************************************/
+/*
+	Copyright © 2017 Mariano Cuenca, Patricio Coronado
+	
+	This file is part of SegaSCPI
+    SegaSCPI is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    SegaSCPI is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with SegaSCPI.  If not, see <http://www.gnu.org/licenses/>.
+**************************************************************************/
 #include "SegaSCPI.h"
 /****************************************************************************
 	Funciones de PilaCodigoErrires
