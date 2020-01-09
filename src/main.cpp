@@ -87,6 +87,13 @@ void miFuncion0(void)
   segaScpi.errorscpi(12);
   segaScpi.errorscpi(13);
   segaScpi.errorscpi(14);
+  segaScpi.errorscpi(8);
+  segaScpi.errorscpi(9);
+  segaScpi.errorscpi(10);
+  segaScpi.errorscpi(11);
+  segaScpi.errorscpi(12);
+  segaScpi.errorscpi(13);
+  segaScpi.errorscpi(14);
 
   //Serial.println("Se ha ejecutado la funcion 0");
   segaScpi.PuertoActual->println("Se ha ejecutado la funcion 0");
